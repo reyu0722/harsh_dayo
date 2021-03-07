@@ -8,6 +8,9 @@
     "hubot": "^3.3.2",
     "hubot-traq": "^1.7.2"
   },
+  "scripts": {
+    "test": "docker build --tag node-test . && docker run --rm node-test ./node_modules/.bin/mocha -r ts-node/register"
+  },
   "engines": {
     "node": "11.x.x"
   },
@@ -17,9 +20,14 @@
     "@types/node": "^14.14.31",
     "@typescript-eslint/eslint-plugin": "^4.16.1",
     "@typescript-eslint/parser": "^4.16.1",
+    "chai": "^4.3.3",
+    "co": "^4.6.0",
     "eslint": "^7.21.0",
     "eslint-config-prettier": "^8.1.0",
+    "hubot-traq-test-helper": "github:reyu0722/hubot-traq-test-helper",
+    "mocha": "^8.3.1",
     "prettier": "^2.2.1",
+    "ts-node": "^9.1.1",
     "typescript": "^4.2.2"
   }
 }
