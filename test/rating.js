@@ -25,7 +25,9 @@ describe('rating', function () {
 
     it('send rating to user', function () {
       expect(this.room.messages[0]).to.eql(['alice', '@hubot rating reyu'])
-      expect(this.room.messages[1][1]).to.match(/\|user\|rating\|\n\|---\|---\|\n\|reyu\|[0-9]+\|\n/)
+      expect(this.room.messages[1]).to.eql(['hubot', ':haakusimasita:'])
+      expect(this.room.messages[2][1]).to.match(/\|user\|rating\|\n\|---\|---\|\n\|reyu\|[0-9]+\|\n/)
+      expect(this.room.messages[3]).to.eql(['hubot', ':kan:'])
     })
   })
   context('get many user\'s rating', function () {
@@ -40,7 +42,9 @@ describe('rating', function () {
 
     it('send ratings to user', function () {
       expect(this.room.messages[0]).to.eql(['alice', '@hubot rating tourist Um_nik ksun48'])
-      expect(this.room.messages[1][1]).to.match(/\|user\|rating\|\n\|---\|---\|\n\|tourist\|[0-9]+\|\n\|Um_nik\|[0-9]+\|\n\|ksun48\|[0-9]+\|\n/)
+      expect(this.room.messages[1]).to.eql(['hubot', ':haakusimasita:'])
+      expect(this.room.messages[2][1]).to.match(/\|user\|rating\|\n\|---\|---\|\n\|tourist\|[0-9]+\|\n\|Um_nik\|[0-9]+\|\n\|ksun48\|[0-9]+\|\n/)
+      expect(this.room.messages[3]).to.eql(['hubot', ':kan:'])
     })
   })
   context('get not existing user\'s rating', function () {
@@ -55,7 +59,9 @@ describe('rating', function () {
 
     it('send error', function () {
       expect(this.room.messages[0]).to.eql(['alice', '@hubot rating konoyuuzaahatabuninaiyo'])
-      expect(this.room.messages[1][1]).to.match(/konoyuuzaahatabuninaiyoの情報の取得に失敗しました/)
+      expect(this.room.messages[1]).to.eql(['hubot', ':haakusimasita:'])
+      expect(this.room.messages[2][1]).to.match(/konoyuuzaahatabuninaiyoの情報の取得に失敗しました/)
+      expect(this.room.messages[3]).to.eql(['hubot', ':failed:'])
     })
   })
 })
