@@ -6,7 +6,6 @@
 import { isBot, getContent } from '../utils'
 import fetch from 'node-fetch'
 import { parse } from 'node-html-parser'
-import { send } from 'node:process'
 
 const getRating = async (user: string) => {
   const response = await fetch(`https://atcoder.jp/users/${user}`)
@@ -17,6 +16,7 @@ const getRating = async (user: string) => {
   const ratingHtml = table.querySelectorAll('tr')[1].querySelector('span')
   const rating = ratingHtml.toString().match(/<.*?>(.*?)<.*?>/i)
   if (!rating) throw new Error('failed to get rating')
+  await new Promise(resolve => setTimeout(() => resolve(null), 500))
   return rating[1]
 }
 
@@ -35,7 +35,16 @@ module.exports = (robot: HubotTraq.Robot) => {
           users.push(content)
         }
       })
-      const ratings = await Promise.all(users.map(user => getRating(user)))
+      const ratings: string[] = []
+      await users.reduce(
+        (acc, cur) =>
+          acc
+            .then(() => getRating(cur))
+            .then(rating => {
+              ratings.push(rating)
+            }),
+        Promise.resolve()
+      )
       const header = '|user|rating|\n|---|---|\n'
       const result = header + users.reduce((acc, cur, index) => `${acc}|${cur}|${ratings[index]}|\n`, '')
       res.send(result)

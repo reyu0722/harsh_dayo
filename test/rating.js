@@ -18,7 +18,7 @@ describe('rating', function () {
       return co(
         function* () {
           yield this.room.user.say('alice', '@hubot rating reyu')
-          yield new Promise(resolve => setTimeout(() => resolve(), 2000))
+          yield new Promise(resolve => setTimeout(() => resolve(), 1000))
         }.bind(this)
       )
     })
@@ -33,7 +33,7 @@ describe('rating', function () {
       return co(
         function* () {
           yield this.room.user.say('alice', '@hubot rating tourist Um_nik ksun48')
-          yield new Promise(resolve => setTimeout(() => resolve(), 2000))
+          yield new Promise(resolve => setTimeout(() => resolve(), 3000))
         }.bind(this)
       )
     })
@@ -48,7 +48,7 @@ describe('rating', function () {
       return co(
         function* () {
           yield this.room.user.say('alice', '@hubot rating konoyuuzaahatabuninaiyo')
-          yield new Promise(resolve => setTimeout(() => resolve(), 2000))
+          yield new Promise(resolve => setTimeout(() => resolve(), 1000))
         }.bind(this)
       )
     })
