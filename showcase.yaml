@@ -7,4 +7,12 @@ entrypoint: |
   exec node_modules/.bin/hubot -a traq -n "$HUBOT_TRAQ_NAME" "$@"
 http_proxy: 8080
 branch:
-  main: null
+  main:
+    type: runtime
+    startup: |
+      npm install -g coffee-script typescript
+      npm ci --production
+      npx tsc
+    entrypoint: |
+      exec node_modules/.bin/hubot -a traq -n "$HUBOT_TRAQ_NAME" "$@"
+    http_proxy: 8080
