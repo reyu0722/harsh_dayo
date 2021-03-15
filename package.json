@@ -8,7 +8,8 @@
     "hubot": "^3.3.2",
     "hubot-traq": "^1.7.2",
     "node-fetch": "^2.6.1",
-    "node-html-parser": "^3.1.0"
+    "node-html-parser": "^3.1.0",
+    "typescript": "^4.2.3"
   },
   "scripts": {
     "test": "docker build --tag node-test . && docker run --rm node-test ./node_modules/.bin/mocha -r ts-node/register"
@@ -30,7 +31,6 @@
     "hubot-traq-test-helper": "github:reyu0722/hubot-traq-test-helper",
     "mocha": "^8.3.1",
     "prettier": "^2.2.1",
-    "ts-node": "^9.1.1",
-    "typescript": "^4.2.3"
+    "ts-node": "^9.1.1"
   }
 }
