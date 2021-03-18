@@ -16,19 +16,21 @@
     "typescript": "^4.2.3"
   },
   "scripts": {
-    "test": "docker build --tag node-test . && docker run --rm node-test ./node_modules/.bin/mocha -r ts-node/register"
+    "test": "mocha -r ts-node/register \"test/**/*.ts\" --timeout 5000"
   },
   "engines": {
     "node": "11.x.x"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.15",
+    "@types/mocha": "^8.2.1",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "chai": "^4.3.4",
     "co": "^4.6.0",
     "eslint": "^7.22.0",
     "eslint-config-prettier": "^8.1.0",
-    "hubot-traq-test-helper": "github:reyu0722/hubot-traq-test-helper",
+    "hubot-test-helper": "github:reyu0722/hubot-test-helper",
     "mocha": "^8.3.2",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1"
