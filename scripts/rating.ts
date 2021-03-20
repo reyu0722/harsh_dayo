@@ -6,7 +6,6 @@
 import { isBot, getContent } from '../utils'
 import fetch from 'node-fetch'
 import { parse } from 'node-html-parser'
-import { timeStamp } from 'node:console'
 
 const getRating = async (user: string) => {
   const response = await fetch(`https://atcoder.jp/users/${user}`)
@@ -25,7 +24,7 @@ module.exports = (robot: HubotTraq.Robot) => {
   robot.respond(/rating/i, async res => {
     try {
       if (isBot(res)) return
-      res.send({ type: 'stamp', name: 'haakusimasita' })
+      await res.send({ type: 'stamp', name: 'haakusimasita' })
       const contents = getContent(res).split(' ')
       const users: string[] = []
       let type = 'list'
@@ -37,7 +36,7 @@ module.exports = (robot: HubotTraq.Robot) => {
       await users.reduce((acc, cur) => acc.then(async () => ratings.push(await getRating(cur))), Promise.resolve(0))
       const header = '|user|rating|\n|---|---|\n'
       const result = header + users.reduce((acc, cur, index) => `${acc}|${cur}|${ratings[index]}|\n`, '')
-      res.send(result)
+      await res.send(result)
       res.send({ type: 'stamp', name: 'kan' })
     } catch (error) {
       res.send(error.message)
