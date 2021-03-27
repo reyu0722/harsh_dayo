@@ -1,7 +1,7 @@
 import Helper from 'hubot-test-helper'
 import { expect } from 'chai'
 
-const helper = new Helper('../scripts')
+const helper = new Helper('../scripts/hoge.ts')
 let room = helper.createRoom({ httpd: false })
 
 describe('hoge', () => {

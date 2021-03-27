@@ -1,10 +1,10 @@
 import Helper from 'hubot-test-helper'
 import { expect } from 'chai'
 
-const helper = new Helper('../scripts')
+const helper = new Helper('../scripts/rating.ts')
 let room = helper.createRoom({ httpd: false })
 
-describe('hoge', () => {
+describe('rating', () => {
   afterEach(() => {
     room.destroy()
     room = helper.createRoom({ httpd: false })
@@ -25,14 +25,14 @@ describe('hoge', () => {
   })
   context("get many user's rating", () => {
     beforeEach(async () => {
-      await room.user.say('alice', '@hubot rating tourist Um_nik ksun48')
-      await new Promise<void>(resolve => setTimeout(() => resolve(), 3000))
+      await room.user.say('alice', '@hubot rating tourist Um_nik')
+      await new Promise<void>(resolve => setTimeout(() => resolve(), 2000))
     })
 
     it('send ratings to user', () => {
-      expect(room.messages[0]).to.eql(['alice', '@hubot rating tourist Um_nik ksun48'])
+      expect(room.messages[0]).to.eql(['alice', '@hubot rating tourist Um_nik'])
       expect(room.messages[1]).to.eql(['hubot', ':haakusimasita:'])
-      expect(room.messages[2][1]).to.match(/\|user\|rating\|\n\|---\|---\|\n\|tourist\|[0-9]+\|\n\|Um_nik\|[0-9]+\|\n\|ksun48\|[0-9]+\|\n/)
+      expect(room.messages[2][1]).to.match(/\|user\|rating\|\n\|---\|---\|\n\|tourist\|[0-9]+\|\n\|Um_nik\|[0-9]+\|\n/)
       expect(room.messages[3]).to.eql(['hubot', ':kan:'])
     })
   })
