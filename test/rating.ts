@@ -46,7 +46,6 @@ describe('rating', () => {
       expect(room.messages[0]).to.eql(['alice', '@hubot rating konoyuuzaahatabuninaiyo'])
       expect(room.messages[1]).to.eql(['hubot', ':haakusimasita:'])
       expect(room.messages[2][1]).to.match(/konoyuuzaahatabuninaiyoの情報の取得に失敗しました/)
-      expect(room.messages[3]).to.eql(['hubot', ':failed:'])
     })
   })
 })

@@ -3,13 +3,12 @@
 // Commands:
 //   @hubot problem ... - Return problem which meets request
 
-import { getContent, isBot } from '../utils'
+import { getContent, calc } from '../utils'
 import { getProblemsByDiff } from '../utils/atcoderProblems'
 
 module.exports = (robot: HubotTraq.Robot) => {
   robot.respond(/problem/i, async res => {
-    try {
-      if (isBot(res)) return
+    calc(res, async res => {
       const contents = getContent(res).split(' ')
       let min = -1
       let max = 100000
@@ -26,8 +25,6 @@ module.exports = (robot: HubotTraq.Robot) => {
         const problem = problems[Math.floor(Math.random() * problems.length)]
         await res.send(`${problem.title}\n${problem.difficulty}`)
       }
-    } catch (error) {
-      res.send(error.message)
-    }
+    })
   })
 }
