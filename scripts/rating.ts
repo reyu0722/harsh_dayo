@@ -3,7 +3,7 @@
 // Commands:
 //   @hubot rating user1 user2 ... - Return rating of users
 
-import { getContent, calc } from '../utils'
+import { exec } from '../utils'
 import fetch from 'node-fetch'
 import { parse } from 'node-html-parser'
 
@@ -22,14 +22,13 @@ const getRating = async (user: string) => {
 
 module.exports = (robot: HubotTraq.Robot) => {
   robot.respond(/rating/i, async res => {
-    calc(res, async res => {
+    exec(res, async options => {
       await res.send({ type: 'stamp', name: 'haakusimasita' })
-      const contents = getContent(res).split(' ')
       const users: string[] = []
       let type = 'list'
-      contents.forEach(content => {
-        const _type = content.match(/type:(.*)/i)
-        _type ? (type = _type[1]) : users.push(content)
+      options.forEach(option => {
+        const _type = option.match(/type:(.*)/i)
+        _type ? (type = _type[1]) : users.push(option)
       })
       const ratings: string[] = []
       await users.reduce((acc, cur) => acc.then(async () => ratings.push(await getRating(cur))), Promise.resolve(0))

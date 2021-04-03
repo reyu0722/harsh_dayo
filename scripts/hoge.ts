@@ -3,11 +3,11 @@
 // Commands:
 //   @hubot hoge  - Return '@user fuga'
 
-import { calc } from '../utils'
+import { exec } from '../utils'
 
 module.exports = (robot: HubotTraq.Robot) => {
   robot.respond(/hoge/i, res =>
-    calc(res, async res => {
+    exec(res, async () => {
       await res.reply('fuga')
     })
   )
