@@ -16,3 +16,13 @@ export const exec = async (res: HubotTraq.Response, func: (content: string[]) =>
     res.send(error.message)
   }
 }
+
+export const makeTable = (objs: { [key: string]: string }[]) => {
+  const keys = Array.from(new Set<string>(new Array().concat(...objs.map(obj => Object.keys(obj)))))
+  if (keys.length == 0) return ''
+
+  const header = `| ${keys.join(' | ')} |\n| ${keys.map(() => '---').join(' | ')} |\n`
+  const body = objs.map(obj => `| ${keys.map(key => obj[key] ?? '').join(' | ')} |`).join('\n')
+
+  return header + body
+}
