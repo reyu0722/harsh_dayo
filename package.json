@@ -9,9 +9,9 @@
     "@types/hubot-traq": "github:reyu0722/hubot-traq-types",
     "@types/node": "^14.14.35",
     "@types/node-fetch": "^2.5.8",
+    "cron": "^1.8.2",
     "hubot": "^3.3.2",
     "hubot-traq": "^1.7.2",
-    "node-cron": "^3.0.0",
     "node-fetch": "^2.6.1",
     "node-html-parser": "^3.1.0",
     "typescript": "^4.2.3"
