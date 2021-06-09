@@ -5,6 +5,7 @@
 
 import { exec, makeTable } from '../utils'
 import fetch from 'node-fetch'
+import { CronJob } from 'cron'
 import { parse } from 'node-html-parser'
 
 type Contest = {
@@ -101,4 +102,19 @@ module.exports = (robot: HubotTraq.Robot) => {
       res.send(`# 今日のコンテスト\n\n${table}`)
     })
   )
+  new CronJob('0 0 15 * * *', async () => {
+    const data = (await getCodeforcesContests()).concat(await getAtCoderContests())
+    const filteredData = data.filter(({ startTime }) => startTime < Date.now() + 1000 * 3600 * 24)
+    filteredData.sort((a, b) => a.startTime - b.startTime)
+    const tableData = filteredData.map(({ name, url, startTime, duration }) => {
+      return {
+        時間: `${formatDate(startTime)}~${formatDate(startTime + duration * 60 * 1000)} (${duration}分)`,
+        コンテスト: `[${name}](${url})`
+      }
+    })
+    const table = makeTable(tableData)
+
+    const channelID = process.env.CHANNEL_ID ?? ''
+    robot.send({ channelID } as any, `# 今日のコンテスト\n\n${table}`)
+  })
 }
