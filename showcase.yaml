@@ -1,6 +1,7 @@
 type: runtime
 startup: |
   npm install -g coffee-script
+  npm install reyu0722/hubot-traq-types
   npm i --production
   npx tsc
 entrypoint: exec node_modules/.bin/hubot -a traq -n "$HUBOT_TRAQ_NAME" "$@"
