@@ -14,6 +14,15 @@ type Contest = {
   duration: string
 }
 
+type CodeforcesContest = {
+  id: number
+  name: string
+  phase: 'BEFORE' | 'CODING' | 'PENDING_SYSTEM_TEST' | 'SYSTEM_TEST' | 'FINISHED'
+  frozen: boolean
+  durationSeconds: number
+  startTimeSeconds: number
+  relativeTimeSeconds: number
+}
 
 const getAtCoderContests = async (): Promise<Contest[]> => {
   const response = await fetch('https://atcoder.jp/contests/')
@@ -43,14 +52,19 @@ const getAtCoderContests = async (): Promise<Contest[]> => {
   })
 }
 
-    const name = (aTag.match(/<.*?>(.*?)<\/.*?>/) ?? [])[1]
-    const link = (aTag.match(/<a href="(.*?)".*/) ?? [])[1]
-    const startTime = (timeTag.match(/<.*?>(.*?)<\/.*?>/) ?? [])[1]
+const getCodeforcesContests = async (): Promise<Contest[]> => {
+  const response = await fetch('https://codeforces.com/api/contest.list')
+  if (!response.ok) throw new Error('failed to fetch Codeforces contests')
 
-    return { name, link, startTime }
-    // 終了時刻をいい感じにする
-    // めんどい
-  })
+  const body = await response.json()
+  const contests: CodeforcesContest[] = body.result
+  return contests
+    .filter(({ phase }) => phase == 'BEFORE')
+    .map(({ id, name, startTimeSeconds, durationSeconds }) => {
+      const startTime = startTimeSeconds * 1000
+      const duration = Math.floor(durationSeconds / 60)
+      return { name, url: `https://codeforces.com/contests/${id}`, startTime, duration }
+    })
 }
 
 module.exports = (robot: HubotTraq.Robot) => {
