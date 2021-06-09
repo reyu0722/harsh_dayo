@@ -5,10 +5,6 @@
   "author": "reyu",
   "description": "",
   "dependencies": {
-    "@types/hubot": "^3.3.0",
-    "@types/hubot-traq": "github:reyu0722/hubot-traq-types",
-    "@types/node": "^14.14.35",
-    "@types/node-fetch": "^2.5.8",
     "cron": "^1.8.2",
     "hubot": "^3.3.2",
     "hubot-traq": "^1.7.2",
@@ -22,7 +18,11 @@
   "devDependencies": {
     "@types/chai": "^4.2.15",
     "@types/cron": "^1.7.2",
+    "@types/hubot": "^3.3.0",
+    "@types/hubot-traq": "github:reyu0722/hubot-traq-types",
     "@types/mocha": "^8.2.1",
+    "@types/node": "^14.14.35",
+    "@types/node-fetch": "^2.5.8",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "chai": "^4.3.4",
@@ -32,7 +32,6 @@
     "hubot-test-helper": "github:reyu0722/hubot-test-helper",
     "mocha": "^8.3.2",
     "prettier": "^2.2.1",
-    "rm": "^0.1.8",
     "ts-node": "^9.1.1"
   }
 }
