@@ -63,7 +63,7 @@ const getAtCoderContests = async (): Promise<Contest[]> => {
 
     const startTime = startDate.getTime() + (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000
     const [_, hour, min] = durationTag.match(/>([^<]*?):([^<]*?)<\//) ?? []
-    const duration = parseInt(hour) * 60 + parseInt(min)
+    const duration = (parseInt(hour) * 60 + parseInt(min)) * 60 * 1000
     return { name, url: `https://atcoder.jp${path}`, startTime, duration }
   })
 }
@@ -78,7 +78,7 @@ const getCodeforcesContests = async (): Promise<Contest[]> => {
     .filter(({ phase }) => phase == 'BEFORE')
     .map(({ id, name, startTimeSeconds, durationSeconds }) => {
       const startTime = startTimeSeconds * 1000 + (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000
-      const duration = Math.floor(durationSeconds / 60)
+      const duration = durationSeconds * 1000
       return { name, url: `https://codeforces.com/contests/${id}`, startTime, duration }
     })
 }
@@ -93,7 +93,7 @@ const getYukicoderContests = async (): Promise<Contest[]> => {
       name: Name,
       url: `https://yukicoder.me/contests/${Id}`,
       startTime: Date.parse(date),
-      duration: Math.floor((Date.parse(EndDate) - Date.parse(date)) / 60 / 1000)
+      duration: Date.parse(EndDate) - Date.parse(date)
     }
   })
 }
@@ -117,7 +117,7 @@ module.exports = (robot: HubotTraq.Robot) => {
       filteredData.sort((a, b) => a.startTime - b.startTime)
       const tableData = filteredData.map(({ name, url, startTime, duration }) => {
         return {
-          時間: `${formatDate(startTime)}~${formatDate(startTime + duration * 60 * 1000)} (${duration}分)`,
+          時間: `${formatDate(startTime)}~${formatDate(startTime + duration)} (${Math.floor(duration / 60 / 1000)}分)`,
           コンテスト: `[${name}](${url})`
         }
       })
