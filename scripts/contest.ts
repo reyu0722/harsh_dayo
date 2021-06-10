@@ -25,6 +25,14 @@ type CodeforcesContest = {
   relativeTimeSeconds: number
 }
 
+type YukicoderContest = {
+  Id: number
+  Name: string
+  Date: string
+  EndDate: string
+  ProblemIdList: number[]
+}
+
 const getAtCoderContests = async (): Promise<Contest[]> => {
   const response = await fetch('https://atcoder.jp/contests/')
   if (!response.ok) throw new Error('failed to fetch AtCoder contests')
@@ -75,6 +83,21 @@ const getCodeforcesContests = async (): Promise<Contest[]> => {
     })
 }
 
+const getYukicoderContests = async (): Promise<Contest[]> => {
+  const response = await fetch('https://yukicoder.me/api/v1/contest/future')
+  if (!response.ok) throw new Error('failed to fetch Yukicoder contests')
+
+  const contests: YukicoderContest[] = await response.json()
+  return contests.map(({ Id, Name, Date: date, EndDate }) => {
+    return {
+      name: Name,
+      url: `https://yukicoder.me/contests/${Id}`,
+      startTime: Date.parse(date),
+      duration: Math.floor((Date.parse(EndDate) - Date.parse(date)) / 60 / 1000)
+    }
+  })
+}
+
 const formatDate = (dateNum: number): string => {
   const date = new Date(dateNum)
   return `${date.getHours()}:${date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()}`
@@ -89,7 +112,7 @@ const formatDuration = (duration: number): string => {
 module.exports = (robot: HubotTraq.Robot) => {
   robot.respond(/contest/i, res =>
     exec(res, async () => {
-      const data = (await getCodeforcesContests()).concat(await getAtCoderContests())
+      const data = (await getCodeforcesContests()).concat(await getAtCoderContests()).concat(await getYukicoderContests())
       const filteredData = data.filter(({ startTime }) => startTime < Date.now() + 1000 * 3600 * 24)
       filteredData.sort((a, b) => a.startTime - b.startTime)
       const tableData = filteredData.map(({ name, url, startTime, duration }) => {
