@@ -77,7 +77,7 @@ const fetchCodeforcesContests = async (): Promise<Contest[]> => {
   return contests
     .filter(({ phase }) => phase == 'BEFORE')
     .map(({ id, name, startTimeSeconds, durationSeconds }) => {
-      const startTime = startTimeSeconds * 1000 + (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000
+      const startTime = startTimeSeconds * 1000
       const duration = durationSeconds * 1000
       return { name, url: `https://codeforces.com/contests/${id}`, startTime, duration }
     })
@@ -103,9 +103,12 @@ const formatDate = (dateNum: number): string => {
   return `${date.getHours()}:${date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()}`
 }
 
-const fetchContests = async () => {
+const fetchContests = async (): Promise<Contest[]> => {
   const contests = await Promise.all([fetchAtCoderContests(), fetchCodeforcesContests(), fetchYukicoderContests()])
-  return contests.flat()
+  return contests.flat().map(contest => {
+    contest.startTime += (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000
+    return contest
+  })
 }
 
 module.exports = (robot: HubotTraq.Robot) => {
