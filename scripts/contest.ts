@@ -8,8 +8,6 @@ import fetch from 'node-fetch'
 import { CronJob } from 'cron'
 import { parse } from 'node-html-parser'
 
-process.env.TZ = 'Asia/Tokyo'
-
 type Contest = {
   name: string
   url: string
@@ -55,7 +53,7 @@ const getAtCoderContests = async (): Promise<Contest[]> => {
     startDate.setMinutes(parseInt(timeStr.substr(11, 2)))
     startDate.setSeconds(0)
 
-    const startTime = startDate.getTime()
+    const startTime = startDate.getTime() + (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000
     const [_, hour, min] = durationTag.match(/>([^<]*?):([^<]*?)<\//) ?? []
     const duration = parseInt(hour) * 60 + parseInt(min)
     return { name, url: `https://atcoder.jp${path}`, startTime, duration }
@@ -71,7 +69,7 @@ const getCodeforcesContests = async (): Promise<Contest[]> => {
   return contests
     .filter(({ phase }) => phase == 'BEFORE')
     .map(({ id, name, startTimeSeconds, durationSeconds }) => {
-      const startTime = startTimeSeconds * 1000
+      const startTime = startTimeSeconds * 1000 + (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000
       const duration = Math.floor(durationSeconds / 60)
       return { name, url: `https://codeforces.com/contests/${id}`, startTime, duration }
     })
@@ -104,19 +102,25 @@ module.exports = (robot: HubotTraq.Robot) => {
       res.send(`# 今日のコンテスト\n\n${table}`)
     })
   )
-  new CronJob('0 0 15 * * *', async () => {
-    const data = (await getCodeforcesContests()).concat(await getAtCoderContests())
-    const filteredData = data.filter(({ startTime }) => startTime < Date.now() + 1000 * 3600 * 24)
-    filteredData.sort((a, b) => a.startTime - b.startTime)
-    const tableData = filteredData.map(({ name, url, startTime, duration }) => {
-      return {
-        時間: `${formatDate(startTime)}~${formatDate(startTime + duration * 60 * 1000)} (${duration}分)`,
-        コンテスト: `[${name}](${url})`
-      }
-    })
-    const table = makeTable(tableData)
+  new CronJob(
+    '0 0 15 * * *',
+    async () => {
+      const data = (await getCodeforcesContests()).concat(await getAtCoderContests())
+      const filteredData = data.filter(({ startTime }) => startTime < Date.now() + 1000 * 3600 * 24)
+      filteredData.sort((a, b) => a.startTime - b.startTime)
+      const tableData = filteredData.map(({ name, url, startTime, duration }) => {
+        return {
+          時間: `${formatDate(startTime)}~${formatDate(startTime + duration * 60 * 1000)} (${duration}分)`,
+          コンテスト: `[${name}](${url})`
+        }
+      })
+      const table = makeTable(tableData)
 
-    const channelID = process.env.CHANNEL_ID ?? ''
-    robot.send({ channelID } as any, `# 今日のコンテスト\n\n${table}`)
-  })
+      const channelID = process.env.CHANNEL_ID ?? ''
+      robot.send({ channelID } as any, `# 今日のコンテスト\n\n${table}`)
+    },
+    null,
+    true,
+    'Asia/Tokyo'
+  )
 }
