@@ -112,7 +112,9 @@ module.exports = (robot: HubotTraq.Robot) => {
   robot.respond(/contest/i, res =>
     exec(res, async () => {
       const data = await fetchContests()
-      const filteredData = data.filter(({ startTime }) => startTime < Date.now() + 1000 * 3600 * 24)
+      const filteredData = data.filter(
+        ({ startTime }) => startTime < Date.now() + (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000 + 1000 * 3600 * 24
+      )
       filteredData.sort((a, b) => a.startTime - b.startTime)
       const tableData = filteredData.map(({ name, url, startTime, duration }) => {
         return {
