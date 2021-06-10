@@ -13,11 +13,12 @@ describe('contest', () => {
   context('user says contest to hubot', () => {
     beforeEach(async () => {
       await room.user.say('alice', '@hubot contest')
-      await new Promise<void>(resolve => setTimeout(() => resolve(), 1000))
+      await new Promise<void>(resolve => setTimeout(() => resolve(), 4000))
     })
 
     it('reply contest information to user', () => {
-      expect(room.messages).to.eql([['alice', '@hubot contest']])
+      expect(room.messages[0]).to.eql(['alice', '@hubot contest'])
+      expect(room.messages[1][1]).to.match(/\| 時間 \| コンテスト \|\n\| --- \| --- \|[\n\| \[.*?\]\(.*?\)\|\ |]+/)
     })
   })
 })
