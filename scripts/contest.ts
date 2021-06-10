@@ -8,6 +8,8 @@ import fetch from 'node-fetch'
 import { CronJob } from 'cron'
 import { parse } from 'node-html-parser'
 
+process.env.TZ = 'Asia/Tokyo'
+
 type Contest = {
   name: string
   url: string
