@@ -61,7 +61,7 @@ const fetchAtCoderContests = async (): Promise<Contest[]> => {
     startDate.setMinutes(parseInt(timeStr.substr(11, 2)))
     startDate.setSeconds(0)
 
-    const startTime = startDate.getTime() + (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000
+    const startTime = startDate.getTime()
     const [_, hour, min] = durationTag.match(/>([^<]*?):([^<]*?)<\//) ?? []
     const duration = (parseInt(hour) * 60 + parseInt(min)) * 60 * 1000
     return { name, url: `https://atcoder.jp${path}`, startTime, duration }
@@ -77,7 +77,7 @@ const fetchCodeforcesContests = async (): Promise<Contest[]> => {
   return contests
     .filter(({ phase }) => phase == 'BEFORE')
     .map(({ id, name, startTimeSeconds, durationSeconds }) => {
-      const startTime = startTimeSeconds * 1000
+      const startTime = startTimeSeconds * 1000 + (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000
       const duration = durationSeconds * 1000
       return { name, url: `https://codeforces.com/contests/${id}`, startTime, duration }
     })
@@ -92,7 +92,7 @@ const fetchYukicoderContests = async (): Promise<Contest[]> => {
     return {
       name: Name,
       url: `https://yukicoder.me/contests/${Id}`,
-      startTime: Date.parse(date),
+      startTime: Date.parse(date) + (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000,
       duration: Date.parse(EndDate) - Date.parse(date)
     }
   })
@@ -105,17 +105,14 @@ const formatDate = (dateNum: number): string => {
 
 const fetchContests = async (): Promise<Contest[]> => {
   const contests = await Promise.all([fetchAtCoderContests(), fetchCodeforcesContests(), fetchYukicoderContests()])
-  return contests.flat().map(contest => {
-    contest.startTime += (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000
-    return contest
-  })
+  return contests.flat()
 }
 
 module.exports = (robot: HubotTraq.Robot) => {
   robot.respond(/contest/i, res =>
     exec(res, async () => {
       const data = await fetchContests()
-      const filteredData = data.filter(({ startTime }) => startTime < Date.now() + 1000 * 3600 * 24)
+      const filteredData = data.filter(({ startTime }) => startTime < Date.now() + 1000 * 3600 * 24 * 5)
       filteredData.sort((a, b) => a.startTime - b.startTime)
       const tableData = filteredData.map(({ name, url, startTime, duration }) => {
         return {
