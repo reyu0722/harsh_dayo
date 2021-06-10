@@ -33,7 +33,7 @@ type YukicoderContest = {
   ProblemIdList: number[]
 }
 
-const getAtCoderContests = async (): Promise<Contest[]> => {
+const fetchAtCoderContests = async (): Promise<Contest[]> => {
   const response = await fetch('https://atcoder.jp/contests/')
   if (!response.ok) throw new Error('failed to fetch AtCoder contests')
   const body = await response.text()
@@ -68,7 +68,7 @@ const getAtCoderContests = async (): Promise<Contest[]> => {
   })
 }
 
-const getCodeforcesContests = async (): Promise<Contest[]> => {
+const fetchCodeforcesContests = async (): Promise<Contest[]> => {
   const response = await fetch('https://codeforces.com/api/contest.list')
   if (!response.ok) throw new Error('failed to fetch Codeforces contests')
 
@@ -83,7 +83,7 @@ const getCodeforcesContests = async (): Promise<Contest[]> => {
     })
 }
 
-const getYukicoderContests = async (): Promise<Contest[]> => {
+const fetchYukicoderContests = async (): Promise<Contest[]> => {
   const response = await fetch('https://yukicoder.me/api/v1/contest/future')
   if (!response.ok) throw new Error('failed to fetch Yukicoder contests')
 
@@ -103,16 +103,15 @@ const formatDate = (dateNum: number): string => {
   return `${date.getHours()}:${date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()}`
 }
 
-const formatDuration = (duration: number): string => {
-  const min = Math.floor(duration / 60)
-  const sec = duration % 60
-  return `${min < 10 ? '0' + min : min}:${sec < 10 ? '0' + sec : sec}`
+const fetchContests = async () => {
+  const contests = await Promise.all([fetchAtCoderContests(), fetchCodeforcesContests(), fetchYukicoderContests()])
+  return contests.flat()
 }
 
 module.exports = (robot: HubotTraq.Robot) => {
   robot.respond(/contest/i, res =>
     exec(res, async () => {
-      const data = (await getCodeforcesContests()).concat(await getAtCoderContests()).concat(await getYukicoderContests())
+      const data = await fetchContests()
       const filteredData = data.filter(({ startTime }) => startTime < Date.now() + 1000 * 3600 * 24)
       filteredData.sort((a, b) => a.startTime - b.startTime)
       const tableData = filteredData.map(({ name, url, startTime, duration }) => {
@@ -128,7 +127,7 @@ module.exports = (robot: HubotTraq.Robot) => {
   new CronJob(
     '0 0 15 * * *',
     async () => {
-      const data = (await getCodeforcesContests()).concat(await getAtCoderContests())
+      const data = await fetchContests()
       const filteredData = data.filter(({ startTime }) => startTime < Date.now() + 1000 * 3600 * 24)
       filteredData.sort((a, b) => a.startTime - b.startTime)
       const tableData = filteredData.map(({ name, url, startTime, duration }) => {
