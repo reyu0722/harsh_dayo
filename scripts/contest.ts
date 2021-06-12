@@ -125,14 +125,14 @@ const getContestTable = async (): Promise<string> => {
 module.exports = (robot: HubotTraq.Robot) => {
   robot.respond(/contest/i, res =>
     exec(res, async () => {
-      const table = getContestTable()
+      const table = await getContestTable()
       res.send(`# 今日のコンテスト\n\n${table}`)
     })
   )
   new CronJob(
     '0 0 15 * * *',
     async () => {
-      const table = getContestTable()
+      const table = await getContestTable()
       const channelID = process.env.CHANNEL_ID ?? ''
       robot.send({ channelID } as any, `# 今日のコンテスト\n\n${table}`)
     },
