@@ -52,7 +52,6 @@ const fetchAtCoderContests = async (): Promise<Contest[]> => {
     const path = (nameTag.match(/<a href="(.*?)".*/) ?? [])[1]
 
     const timeStr = (timeTag.match(/\?iso=(.*?)&/) ?? [])[1]
-    // const startTime = `${timeStr.substr(4, 2)}/${timeStr.substr(6, 2)} ${timeStr.substr(9, 2)}:${timeStr.substr(11, 2)}`
     const startDate = new Date()
     startDate.setFullYear(parseInt(timeStr.substr(0, 4)))
     startDate.setMonth(parseInt(timeStr.substr(4, 2)) - 1)
@@ -108,38 +107,32 @@ const fetchContests = async (): Promise<Contest[]> => {
   return contests.flat()
 }
 
+const getContestTable = async (): Promise<string> => {
+  const data = await fetchContests()
+  const filteredData = data.filter(
+    ({ startTime }) => startTime < Date.now() + (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000 + 1000 * 3600 * 24
+  )
+  filteredData.sort((a, b) => a.startTime - b.startTime)
+  const tableData = filteredData.map(({ name, url, startTime, duration }) => {
+    return {
+      時間: `${formatDate(startTime)}~${formatDate(startTime + duration)} (${Math.floor(duration / 60 / 1000)}分)`,
+      コンテスト: `[${name}](${url})`
+    }
+  })
+  return makeTable(tableData)
+}
+
 module.exports = (robot: HubotTraq.Robot) => {
   robot.respond(/contest/i, res =>
     exec(res, async () => {
-      const data = await fetchContests()
-      const filteredData = data.filter(
-        ({ startTime }) => startTime < Date.now() + (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000 + 1000 * 3600 * 24
-      )
-      filteredData.sort((a, b) => a.startTime - b.startTime)
-      const tableData = filteredData.map(({ name, url, startTime, duration }) => {
-        return {
-          時間: `${formatDate(startTime)}~${formatDate(startTime + duration)} (${Math.floor(duration / 60 / 1000)}分)`,
-          コンテスト: `[${name}](${url})`
-        }
-      })
-      const table = makeTable(tableData)
+      const table = getContestTable()
       res.send(`# 今日のコンテスト\n\n${table}`)
     })
   )
   new CronJob(
     '0 0 15 * * *',
     async () => {
-      const data = await fetchContests()
-      const filteredData = data.filter(({ startTime }) => startTime < Date.now() + 1000 * 3600 * 24)
-      filteredData.sort((a, b) => a.startTime - b.startTime)
-      const tableData = filteredData.map(({ name, url, startTime, duration }) => {
-        return {
-          時間: `${formatDate(startTime)}~${formatDate(startTime + duration * 60 * 1000)} (${duration}分)`,
-          コンテスト: `[${name}](${url})`
-        }
-      })
-      const table = makeTable(tableData)
-
+      const table = getContestTable()
       const channelID = process.env.CHANNEL_ID ?? ''
       robot.send({ channelID } as any, `# 今日のコンテスト\n\n${table}`)
     },
