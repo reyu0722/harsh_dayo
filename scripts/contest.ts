@@ -119,7 +119,7 @@ const getContestTable = async (): Promise<string> => {
       コンテスト: `[${name}](${url})`
     }
   })
-  return makeTable(tableData)
+  return tableData.length !== 0 ? makeTable(tableData) : ''
 }
 
 module.exports = (robot: HubotTraq.Robot) => {
@@ -134,7 +134,7 @@ module.exports = (robot: HubotTraq.Robot) => {
     async () => {
       const table = await getContestTable()
       const channelID = process.env.CHANNEL_ID ?? ''
-      robot.send({ channelID } as any, `# 今日のコンテスト\n\n${table}`)
+      if (table !== '') robot.send({ channelID } as any, `# 今日のコンテスト\n\n${table}`)
     },
     null,
     true,
